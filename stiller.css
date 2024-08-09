@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+#calculator {
+    background-color: #2d3748; /* Gri arka plan */
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.calculator-button {
+    background-color: #4a5568; /* Koyu gri buton rengi */
+    color: white;
+    border: 1px solid #2d3748; /* Buton kenar rengi */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calculator-button:hover {
+    background-color: #2d3748; /* Buton üzerine gelindiğinde arka plan rengi */
+}
+
+.calculator-button[data-action="C"] {
+    background-color: #e53e3e; /* Kırmızı buton rengi */
+}
+
+.calculator-button[data-action="C"]:hover {
+    background-color: #c53030; /* Kırmızı buton üzerine gelindiğinde arka plan rengi */
+}
+
+.calculator-button[data-action="sqrt"] {
+    background-color: #48bb78; /* Yeşil buton rengi */
+}
+
+.calculator-button[data-action="sqrt"]:hover {
+    background-color: #38a169; /* Yeşil buton üzerine gelindiğinde arka plan rengi */
+}
+
+.calculator-button[data-action="pow"] {
+    background-color: #edf2f7; /* Beyaz buton rengi */
+    color: #1a202c; /* Siyah yazı rengi */
+}
+
+.calculator-button[data-action="pow"]:hover {
+    background-color: #e2e8f0; /* Beyaz buton üzerine gelindiğinde arka plan rengi */
+}
+
+.calculator-button[data-action="="] {
+    background-color: #38b2ac; /* Turkuaz buton rengi */
+}
+
+.calculator-button[data-action="="]:hover {
+    background-color: #319795; /* Turkuaz buton üzerine gelindiğinde arka plan rengi */
+}
+
+#result {
+    background-color: #1a202c; /* Koyu gri arka plan */
+    color: #f7fafc; /* Beyaz yazı rengi */
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    word-wrap: break-word;
+}

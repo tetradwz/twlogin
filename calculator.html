@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Makinesi</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="stiller.css">
+    <style>
+        .calculator-button {
+            font-size: 1.75rem; /* Font boyutunu artır */
+            width: 4rem; /* Buton genişliğini artır */
+            height: 4rem; /* Buton yüksekliğini artır */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .number-button {
+            background-color: #f3f4f6; /* Sayı butonları için açık gri */
+            color: #333; /* Siyah metin rengi */
+        }
+
+        .number-button:hover {
+            background-color: #e5e7eb; /* Sayı butonları için koyu gri */
+        }
+
+        .operator-button {
+            background-color: #4b5563; /* İşlem butonları için koyu gri */
+            color: #f9fafb; /* Beyaz metin rengi */
+        }
+
+        .operator-button:hover {
+            background-color: #374151; /* İşlem butonları için daha koyu gri */
+        }
+
+        .special-button {
+            background-color: #ef4444; /* Temizleme ve eşittir butonları için kırmızı */
+            color: #fff; /* Beyaz metin rengi */
+        }
+
+        .special-button:hover {
+            background-color: #dc2626; /* Daha koyu kırmızı */
+        }
+
+        .calculator-button::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: -2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            white-space: nowrap;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.875rem;
+            z-index: 10;
+        }
+
+        .calculator-button:hover::before {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .calculator-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        #result-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        #result {
+            font-size: 2rem;
+            padding: 1rem;
+            background-color: #333;
+            color: #fff;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: block; /* Sonuç alanını görünür yap */
+        }
+
+        #log {
+            font-size: 1.25rem;
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="calculator-container">
+        <div id="calculator" class="calculator">
+            <button class="calculator-button special-button" data-action="C" data-tooltip="Temizleme">C</button>
+            <button class="calculator-button operator-button" data-action="/" data-tooltip="Bölme">/</button>
+            <button class="calculator-button operator-button" data-action="*" data-tooltip="Çarpma">*</button>
+            <button class="calculator-button operator-button" data-action="-" data-tooltip="Çıkarma">-</button>
+            <button class="calculator-button number-button" data-action="7" data-tooltip="Yedi">7</button>
+            <button class="calculator-button number-button" data-action="8" data-tooltip="Sekiz">8</button>
+            <button class="calculator-button number-button" data-action="9" data-tooltip="Dokuz">9</button>
+            <button class="calculator-button operator-button" data-action="+" data-tooltip="Toplama">+</button>
+            <button class="calculator-button number-button" data-action="4" data-tooltip="Dört">4</button>
+            <button class="calculator-button number-button" data-action="5" data-tooltip="Beş">5</button>
+            <button class="calculator-button number-button" data-action="6" data-tooltip="Altı">6</button>
+            <button class="calculator-button operator-button" data-action="sqrt" data-tooltip="Karekök">√</button>
+            <button class="calculator-button number-button" data-action="1" data-tooltip="Bir">1</button>
+            <button class="calculator-button number-button" data-action="2" data-tooltip="İki">2</button>
+            <button class="calculator-button number-button" data-action="3" data-tooltip="Üç">3</button>
+            <button class="calculator-button operator-button" data-action="pow" data-tooltip="Üs">^</button>
+            <button class="calculator-button operator-button" data-action="(" data-tooltip="Sol Parantez">(</button>
+            <button class="calculator-button operator-button" data-action=")" data-tooltip="Sağ Parantez">)</button>
+            <button class="calculator-button number-button col-span-2" data-action="0" data-tooltip="Sıfır">0</button>
+            <button class="calculator-button number-button" data-action="." data-tooltip="Nokta">.</button>
+            <button class="calculator-button special-button" data-action="=" data-tooltip="Sonuç">=</button>
+        </div>
+        <div id="result-container">
+            <div id="result"></div> <!-- Sonuç alanını burada güncelleyebilirsiniz -->
+            <div id="log"></div> <!-- Log kısmı buraya taşındı -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.calculator-button');
+            const result = document.getElementById('result');
+            const log = document.getElementById('log');
+            let currentInput = '';
+            let history = [];
+            let isResultDisplayed = false;
+
+            function updateResult(text) {
+                result.textContent = text;
+            }
+
+            function calculate(expression) {
+                try {
+                    let formattedExpression = expression
+                        .replace(/(\d*)√\(([^)]+)\)/g, 'sqrt($2)') // √ işleme
+                        .replace(/(\d*)\^([^)]+)/g, '$1^$2') // ^ işleme
+                        .replace(/(\d+)√([0-9]+)/g, 'sqrt($1*$2)') // √ işlemleri
+                        .replace(/(\d+)pow\(([^)]+)\)/g, '$1^($2)'); // pow işlemleri
+
+                    return math.evaluate(formattedExpression);
+                } catch (e) {
+                    console.error('Hata:', e);
+                    return 'Hatalı ifade';
+                }
+            }
+
+            function updateHistory() {
+                log.innerHTML = history.map(entry => `<div>${entry}</div>`).join('');
+            }
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.dataset.action;
+
+                    if (action === 'C') {
+                        currentInput = '';
+                        updateResult('');
+                        isResultDisplayed = false;
+                    } else if (action === '=') {
+                        const resultText = calculate(currentInput);
+                        history.push(currentInput + ' = ' + resultText);
+                        updateResult(resultText);
+                        updateHistory();
+                        currentInput = ''; // Sonuç gösterildikten sonra inputu sıfırla
+                        isResultDisplayed = true;
+                    } else if (['sqrt', 'pow', '(', ')'].includes(action)) {
+                        if (isResultDisplayed) {
+                            currentInput = '';
+                            isResultDisplayed = false;
+                        }
+                        currentInput += action === 'sqrt' ? '√' : action === 'pow' ? '^' : action;
+                        updateResult(currentInput);
+                    } else {
+                        if (isResultDisplayed) {
+                            currentInput = '';
+                            isResultDisplayed = false;
+                        }
+                        currentInput += action;
+                        updateResult(currentInput);
+                    }
+                });
+            });
+
+            document.addEventListener('keydown', function(e) {
+                const key = e.key;
+
+                if (key.match(/[0-9\+\-\*\/\(\)\.\^]/)) {
+                    if (isResultDisplayed) {
+                        currentInput = '';
+                        isResultDisplayed = false;
+                    }
+                    currentInput += key;
+                    updateResult(currentInput);
+                } else if (key === 'Enter') {
+                    const resultText = calculate(currentInput);
+                    history.push(currentInput + ' = ' + resultText);
+                    updateResult(resultText);
+                    updateHistory();
+                    currentInput = ''; // Sonuç gösterildikten sonra inputu sıfırla
+                    isResultDisplayed = true;
+                } else if (key === 'Escape') {
+                    currentInput = '';
+                    updateResult('');
+                    isResultDisplayed = false;
+                } else if (key === 'Backspace') {
+                    currentInput = currentInput.slice(0, -1);
+                    updateResult(currentInput);
+                } else if (key === '(' || key === ')') {
+                    if (isResultDisplayed) {
+                        currentInput = '';
+                        isResultDisplayed = false;
+                    }
+                    currentInput += key;
+                    updateResult(currentInput);
+                }
+            });
+
+            document.addEventListener('paste', (event) => {
+                const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+                if (isResultDisplayed) {
+                    currentInput = '';
+                    isResultDisplayed = false;
+                }
+                currentInput += pasteData;
+                updateResult(currentInput);
+            });
+        });
+    </script>
+</body>
+</html>
